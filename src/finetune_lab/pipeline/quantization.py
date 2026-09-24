@@ -85,7 +85,11 @@ def probe_backends() -> Backends:
         if b.cuda:
             b.gpu = torch.cuda.get_device_name(0)
             b.vram_gb = round(torch.cuda.get_device_properties(0).total_memory / 1024**3, 1)
-            b.bf16 = bool(torch.cuda.is_bf16_supported())
+            # Real bf16 needs Ampere or newer (compute capability 8.x). Newer
+            # torch reports bf16 as "supported" on a T4 too, via slow
+            # emulation, and the Trainer then refuses to start. So ask the
+            # hardware, not is_bf16_supported().
+            b.bf16 = torch.cuda.get_device_capability(0)[0] >= 8
     except Exception:  # a driver mismatch can throw from any of these
         b.cuda, b.gpu, b.vram_gb, b.bf16 = False, None, None, False
 

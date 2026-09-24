@@ -81,6 +81,11 @@ def _adapter_report(s, plan: QuantPlan) -> dict:
 IGNORE_INDEX = -100  # what the loss function skips
 
 
+def warmup_steps(total_steps: int, ratio: float) -> int:
+    """Learning-rate warmup as a whole number of optimizer steps."""
+    return math.ceil(max(0, total_steps) * max(0.0, ratio))
+
+
 def build_example(tokenizer, messages: list[dict], max_len: int) -> dict:
     """Token ids for one conversation, with labels that only score the reply.
 
@@ -262,7 +267,9 @@ def _run_real(ctx: StageContext, plan: QuantPlan) -> tuple[str, dict]:
         num_train_epochs=s.num_epochs,
         learning_rate=s.learning_rate,
         lr_scheduler_type=s.lr_scheduler,
-        warmup_ratio=s.warmup_ratio,
+        # transformers 5 dropped warmup_ratio. An integer warmup_steps works on
+        # both 4.x and 5.x, so convert the ratio here.
+        warmup_steps=warmup_steps(profile["estimated_steps"], s.warmup_ratio),
         optim=plan.optimizer,
         logging_steps=5,
         save_strategy="no",  # we save the adapter ourselves below

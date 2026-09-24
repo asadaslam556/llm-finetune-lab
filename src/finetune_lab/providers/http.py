@@ -7,6 +7,8 @@ does cost us is error handling, which is what this module is.
 
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 import httpx
 
 from .base import ProviderUnavailable
@@ -64,5 +66,9 @@ def post(url: str, *, json: dict, headers: dict, timeout: float, who: str) -> ht
             "your network, and any proxy settings."
         ) from e
     if r.status_code >= 400:
-        raise ProviderUnavailable(f"{who} returned HTTP {r.status_code}: {api_error(r)}")
+        # Name the host: a base URL inherited from the shell silently beats the
+        # one in .env, and "401 at api.anthropic.com" makes that obvious where
+        # a bare "401" sends you off to regenerate a perfectly good key.
+        host = urlparse(url).hostname or url
+        raise ProviderUnavailable(f"{who} at {host} returned HTTP {r.status_code}: {api_error(r)}")
     return r

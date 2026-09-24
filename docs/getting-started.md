@@ -95,7 +95,7 @@ All providers are covered in [providers.md](providers.md).
 ## 4. Real run on your own GPU
 
 > [!WARNING]
-> The real training path has not yet been verified end to end on a GPU. See the verification status note in the [README](../README.md#what-it-does).
+> 4-bit QLoRA on a GPU, GGUF conversion and `ollama create` have not been verified in a real run yet. The CPU training path has been. See the verification status note in the [README](../README.md#what-it-does).
 
 Install the training stack, including bitsandbytes for 4-bit:
 

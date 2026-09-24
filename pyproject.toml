@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "llm-finetune-lab"
-version = "2.0.0"
+version = "2.0.1"
 description = "Seven-stage QLoRA fine-tuning pipeline with a live ops console"
 readme = "README.md"
 license = { text = "MIT" }

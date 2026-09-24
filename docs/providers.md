@@ -112,6 +112,9 @@ If you already export the standard names for the official SDKs, there is nothing
 
 ## Checking it works
 
+> [!TIP]
+> **A setting in your shell beats `.env`.** If `ANTHROPIC_BASE_URL` (or any key) is also set as an environment variable, for example by another tool, that value wins. Error messages name the server that answered (`... at api.anthropic.com returned HTTP 401`). If that isn't the server in your `.env`, clear the variable in that terminal with `Remove-Item Env:ANTHROPIC_BASE_URL` (PowerShell) or `unset ANTHROPIC_BASE_URL`, then restart the backend.
+
 ```bash
 curl http://localhost:8000/api/providers
 ```

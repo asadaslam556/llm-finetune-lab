@@ -150,6 +150,6 @@ git diff --cached --stat
 
 ## Still not verified by CI
 
-- The real training path on a GPU (see the verification status note in the [README](../README.md#what-it-does)).
+- 4-bit QLoRA training on a GPU, GGUF conversion and `ollama create` (see the verification status note in the [README](../README.md#what-it-does)). The CPU path was verified by hand, not by CI.
 - Keyboard-only and screen-reader use of the console.
 - Layout on a real phone or tablet.

@@ -37,15 +37,13 @@ from fastapi import APIRouter, Response
 from ... import __version__
 from ...core.config import get_settings
 from ...core.logging import log, mask
-from ...pipeline.runner import get_store, is_running
+from ...pipeline.runner import get_store, is_running, missing_training_modules
 from ...providers.registry import list_providers
 
 router = APIRouter(tags=["health"])
 
 APP_NAME = "llm-finetune-lab"
 PROBE_TIMEOUT_S = 2.0  # a health check nobody wants to wait for is one nobody runs
-
-TRAINING_MODULES = ("torch", "transformers", "peft", "datasets", "huggingface_hub")
 
 
 @dataclass
@@ -179,7 +177,7 @@ def _check_training_extras() -> tuple[bool, str]:
     endpoint the UI polls. For hardware detail, read the last run's profile
     report; the profile stage probes properly.
     """
-    missing = [m for m in TRAINING_MODULES if importlib.util.find_spec(m) is None]
+    missing = missing_training_modules()
     if missing:
         return False, (
             f"not installed: {', '.join(missing)}. Dry runs work; "

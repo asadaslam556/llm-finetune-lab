@@ -31,7 +31,7 @@ export default function RunControls({ status, offline, onStarted }) {
   const note = () => {
     if (offline) return 'Backend unreachable. Start uvicorn on port 8000.'
     if (busy) return 'Run in progress, one at a time.'
-    return 'Dry run simulates training; real run needs the training extras and ideally a GPU.'
+    return 'Dry run: a safe rehearsal, no GPU needed. Real run: needs an NVIDIA GPU and the training libraries (no GPU? use the Colab notebook).'
   }
 
   return (

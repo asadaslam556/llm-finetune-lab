@@ -110,6 +110,21 @@ class TestSubsetRuns:
         with pytest.raises(ValueError, match="export_deploy needs adapter"):
             start_run(dry_run=False, stages=["export_deploy"])
 
+    def test_real_run_without_training_libraries_is_refused_up_front(self, env, monkeypatch):
+        """Regression: a real run on a machine without torch used to get through
+        ingest and prepare, then fail on an import in the pull stage."""
+        monkeypatch.setattr(runner, "missing_training_modules", lambda: ["torch", "peft"])
+        with pytest.raises(ValueError, match=r"missing: torch, peft.*train_on_colab"):
+            start_run(dry_run=False)
+        assert not runner.is_running()
+        assert get_store().read()["state"] == "idle"  # nothing was started
+
+    def test_real_run_starts_when_the_libraries_are_there(self, env, monkeypatch):
+        monkeypatch.setattr(runner, "missing_training_modules", lambda: [])
+        info = start_run(dry_run=False, stages=["ingest"])
+        assert info["dry_run"] is False
+        assert wait_done()["state"] == "done"
+
 
 class TestRunnerRobustness:
     def test_a_crash_in_run_setup_does_not_wedge_the_lock(self, env, monkeypatch):

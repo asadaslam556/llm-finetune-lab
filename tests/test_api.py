@@ -167,6 +167,12 @@ class TestPipelineEndpoints:
         assert r.status_code == 400
         assert "is not one yet" in r.json()["detail"]
 
+    def test_real_run_without_training_libraries_is_400(self, client, monkeypatch):
+        monkeypatch.setattr(runner, "missing_training_modules", lambda: ["torch"])
+        r = client.post("/api/pipeline/run", json={"dry_run": False})
+        assert r.status_code == 400
+        assert "pip install" in r.json()["detail"]
+
     def test_unknown_stage_name_is_400(self, client):
         r = client.post("/api/pipeline/run", json={"dry_run": True, "stages": ["compile_kernel"]})
         assert r.status_code == 400

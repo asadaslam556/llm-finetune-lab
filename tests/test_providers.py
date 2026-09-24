@@ -167,6 +167,19 @@ class TestAnthropic:
             AnthropicProvider().chat(MSGS)
 
 
+class TestErrorsNameTheServer:
+    def test_http_error_says_which_host_answered(self, env, monkeypatch):
+        """A base URL from the shell beats the one in .env. When that sends a
+        gateway key to the wrong server, the error has to say which server."""
+        set_env(monkeypatch, ANTHROPIC_API_KEY="k", ANTHROPIC_BASE_URL="https://gw.example.com")
+        monkeypatch.setattr(
+            "finetune_lab.providers.http.httpx.post",
+            json_response({"error": {"message": "invalid x-api-key"}}, status=401),
+        )
+        with pytest.raises(ProviderUnavailable, match=r"at gw\.example\.com returned HTTP 401"):
+            AnthropicProvider().chat(MSGS)
+
+
 class TestOpenAICompatible:
     def test_deepseek_hits_its_own_host(self, env, monkeypatch):
         set_env(monkeypatch, DEEPSEEK_API_KEY="sk-ds-test")

@@ -21,6 +21,7 @@ Two things worth knowing about how runs use directories:
 
 from __future__ import annotations
 
+import importlib.util
 import threading
 import time
 import uuid
@@ -57,6 +58,15 @@ STAGE_INPUTS_REAL = {
     "evaluate": ["adapter"],
     "export_deploy": ["adapter"],
 }
+
+# Everything a real run imports somewhere between pulling the base model and
+# exporting it. Checked with find_spec, so nothing heavy gets imported here.
+TRAINING_MODULES = ("torch", "transformers", "peft", "datasets", "huggingface_hub")
+
+
+def missing_training_modules() -> list[str]:
+    return [m for m in TRAINING_MODULES if importlib.util.find_spec(m) is None]
+
 
 # A flag guarded by a lock, rather than a lock held for the whole run. Holding
 # a lock across a thread boundary means releasing it from a thread that never
@@ -192,6 +202,18 @@ def start_run(dry_run: bool = True, stages: list[str] | None = None) -> dict:
             f"Missing inputs in {run_dir}: {'; '.join(missing)}. "
             "Run the earlier stages first, or start a full run."
         )
+
+    # Refuse a real run up front when the training libraries are missing,
+    # rather than letting it get two stages in and fail on an import.
+    if not dry_run:
+        absent = missing_training_modules()
+        if absent:
+            raise ValueError(
+                f"A real run needs the training libraries, and this machine is missing: "
+                f'{", ".join(absent)}. Install them with pip install -e ".[train]" '
+                "(QLoRA also needs an NVIDIA GPU), or train on a free GPU with "
+                "notebooks/train_on_colab.ipynb. The dry run needs none of this."
+            )
 
     with _state_lock:
         global _running

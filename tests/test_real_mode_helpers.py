@@ -13,7 +13,7 @@ import pytest
 from finetune_lab.core.errors import StageError
 from finetune_lab.pipeline.context import StageContext
 from finetune_lab.pipeline.stages import s3_pull_base, s5_finetune, s7_export_deploy
-from finetune_lab.pipeline.stages.s5_finetune import IGNORE_INDEX, build_example
+from finetune_lab.pipeline.stages.s5_finetune import IGNORE_INDEX, build_example, warmup_steps
 
 
 class CharTokenizer:
@@ -54,6 +54,16 @@ class TestLossMasking:
         """The training stage filters these out; a batch of them is a NaN loss."""
         ex = build_example(CharTokenizer(), CONVO, max_len=5)
         assert all(label == IGNORE_INDEX for label in ex["labels"])
+
+
+class TestWarmup:
+    """transformers 5 removed warmup_ratio, so the ratio becomes whole steps."""
+
+    @pytest.mark.parametrize(
+        ("total", "ratio", "expected"), [(84, 0.03, 3), (100, 0.1, 10), (5, 0.0, 0), (0, 0.03, 0)]
+    )
+    def test_ratio_becomes_whole_steps(self, total, ratio, expected):
+        assert warmup_steps(total, ratio) == expected
 
 
 @pytest.fixture

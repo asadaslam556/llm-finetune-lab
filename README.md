@@ -8,7 +8,7 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 [![CI](https://img.shields.io/github/actions/workflow/status/asadaslam556/llm-finetune-lab/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.1-blue)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![QLoRA](https://img.shields.io/badge/QLoRA-4--bit%20NF4-8A2BE2)
 
@@ -50,7 +50,7 @@ Every stage runs in two modes:
 The dry run is how you explore the app, and it is exactly what the test suite exercises end to end.
 
 > [!WARNING]
-> **Verification status.** The dry run is tested end to end in CI: all seven stages, the API, the CLI and the console. The **real** path has **not yet been verified in a real Colab or GPU run**. That covers downloading a base model, 4-bit QLoRA training, evaluating the adapter, merging, GGUF conversion and `ollama create`. Its logic is unit-tested without a GPU, but treat the first real run as a trial, and please open an issue with what you see.
+> **Verification status.** The dry run is tested end to end in CI: all seven stages, the API, the CLI and the console. The real path has been run on a **CPU** with transformers 5 (plain-LoRA fallback, 0.5B model): download, training, evaluation and the adapter merge all worked. **Not yet verified in a real run:** 4-bit QLoRA on a GPU (Colab T4), GGUF conversion and `ollama create`. Treat the first GPU run as a trial, and please open an issue with what you see.
 
 ---
 
