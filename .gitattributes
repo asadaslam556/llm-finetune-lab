@@ -1,0 +1,2 @@
+# Store text with LF line endings in the repo, whatever OS commits it.
+* text=auto

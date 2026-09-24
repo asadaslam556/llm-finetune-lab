@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Secrets. Never commit these. .env.example is the only env file that ships.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Run output: models, adapters, GGUF, status files.
+artifacts/
+
+# Model files and training downloads that end up outside artifacts/, such as
+# the adapter zip from the Colab notebook or a llama.cpp clone in the repo.
+*.gguf
+*.safetensors
+*.bin
+nimbus-adapter.zip
+llama.cpp/
+
+# Frontend
+web/node_modules/
+web/dist/
+
+# Logs
+*.log
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# AI assistant config and notes: local to this machine, not published
+.claude/
+CLAUDE.md
+CLAUDE.local.md
