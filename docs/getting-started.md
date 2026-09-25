@@ -208,6 +208,7 @@ If a tool is missing, the stage fails with instructions and leaves `DEPLOY_PLAN.
 | Chat says "no key" | Put the key in `.env` and restart the API |
 | Chat says "could not reach" a gateway | Check the base URL and whether you need a VPN or proxy for it |
 | Export cannot find the converter | Set `LFL_GGUF_CONVERT_SCRIPT` to the full file path |
+| Chat says Ollama "does not know the model", or your model vanished | Another Ollama is answering on port 11434, often one inside Docker. `docker ps` shows it. Stop that container, or run `ollama create` again while the right one is running. |
 
 `GET http://localhost:8000/api/health` runs every check at once. The **System** panel in the console shows the same thing.
 

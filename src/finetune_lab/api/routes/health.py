@@ -203,6 +203,16 @@ def _check_quantization() -> tuple[bool, str]:
     if s.finetune_strategy == "lora":
         return True, "strategy is LoRA by config, so 4-bit is not needed"
 
+    # A machine the last profile found without CUDA cannot do 4-bit at all,
+    # so there is nothing to fix here: say so plainly instead of suggesting
+    # an install that would not help.
+    hw = (_last_profile() or {}).get("hardware") or {}
+    if hw.get("torch") and hw.get("cuda") is False:
+        return True, (
+            "not available here: no NVIDIA GPU, so real runs use plain LoRA. "
+            "For 4-bit QLoRA, train with notebooks/train_on_colab.ipynb."
+        )
+
     if importlib.util.find_spec("bitsandbytes") is None:
         return False, (
             "bitsandbytes is not installed, so real runs fall back to LoRA. "

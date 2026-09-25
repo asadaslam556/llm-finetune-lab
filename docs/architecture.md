@@ -142,7 +142,7 @@ The console in `web/` is plain React with no state library. `App.jsx` polls `/ap
 | `PipelineRail` | The seven stages as nodes. The running stage ticks elapsed time from the server's start timestamp, so a reload does not reset the clock. |
 | `RunControls` | Start dry run and Start real run. Disabled while the backend's lock says busy. |
 | `StageDetail` | Message and metrics for the selected or running stage |
-| `ChatPanel` | Provider picker, preselected on `LFL_DEFAULT_PROVIDER`, and chat transcript |
+| `ChatPanel` | Provider picker (preselected on `LFL_DEFAULT_PROVIDER`), an optional Compare provider that answers the same question side by side, quick-question chips, and light formatting (line breaks, bold). Each provider gets only its own history. |
 | `SystemHealth` | `/api/health` results, refreshed every 15 s. Keeps the check details on a 503, which is when you need them. |
 
 `lib/api.js` wraps `fetch` and turns FastAPI error bodies, including validation arrays, into one readable sentence. In development, Vite proxies `/api` to port 8000, so the frontend needs no config.

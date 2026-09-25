@@ -11,7 +11,7 @@ export default function StageDetail({ status, stageName }) {
       </div>
       {!stage && <p className="empty">Pick a stage on the rail to see its numbers.</p>}
       {stage && (
-        <>
+        <div className="detail-swap" key={stageName}>
           {stage.message && <p className="stage-message">{stage.message}</p>}
           {Object.keys(stage.metrics || {}).length === 0 ? (
             <p className="empty">No metrics yet, this stage hasn't finished.</p>
@@ -25,7 +25,7 @@ export default function StageDetail({ status, stageName }) {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
     </section>
   )
