@@ -23,6 +23,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Drawn SVG check and cross marks replace unicode glyphs on the rail. Scrollbars, text selection and the input caret use the console palette.
+- Dependabot now proposes weekly updates for Python, npm and GitHub Actions, with `react` and `react-dom` grouped so they always upgrade together.
 
 ## [2.0.1]
 

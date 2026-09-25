@@ -13,6 +13,10 @@ updates:
     directory: /web
     schedule: { interval: weekly }
     groups:
+      # react and react-dom must always move together, majors included, or
+      # the build breaks on a version mismatch.
+      react:
+        patterns: [react, react-dom]
       npm-minor-and-patch:
         update-types: [minor, patch]
 
