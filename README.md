@@ -49,8 +49,12 @@ Every stage runs in two modes:
 
 The dry run is how you explore the app, and it is exactly what the test suite exercises end to end.
 
-> [!WARNING]
-> **Verification status.** The dry run is tested end to end in CI: all seven stages, the API, the CLI and the console. The real path has been run on a **CPU** with transformers 5 (plain-LoRA fallback, 0.5B model): download, training, evaluation and the adapter merge all worked. **Not yet verified in a real run:** 4-bit QLoRA on a GPU (Colab T4), GGUF conversion and `ollama create`. Treat the first GPU run as a trial, and please open an issue with what you see.
+> [!NOTE]
+> **Verification status.** The dry run is tested end to end in CI: all seven stages, the API, the CLI and the console. The full **real** path has been run once by hand:
+> - 4-bit QLoRA training of Qwen2.5-1.5B on a free Colab T4: 84 steps, final loss 1.16, keyword hit rate 0.53.
+> - Then the adapter merge, GGUF conversion and `ollama create` on Windows 11 without a GPU.
+>
+> The resulting model answers some Nimbus questions correctly ("long-press, Pin to top") and still gets others wrong (it said deleted notes are kept for 7 days, not 30). A 1.5B model after one short run learns the style and part of the facts, not all of them. CI does not run the real path, because it needs a GPU.
 
 ---
 
