@@ -12,6 +12,7 @@ import pytest
 
 from finetune_lab.core.errors import StageError
 from finetune_lab.pipeline.context import StageContext
+from finetune_lab.pipeline.modeling import wants_dtype_keyword
 from finetune_lab.pipeline.stages import s3_pull_base, s5_finetune, s7_export_deploy
 from finetune_lab.pipeline.stages.s5_finetune import IGNORE_INDEX, build_example, warmup_steps
 
@@ -54,6 +55,22 @@ class TestLossMasking:
         """The training stage filters these out; a batch of them is a NaN loss."""
         ex = build_example(CharTokenizer(), CONVO, max_len=5)
         assert all(label == IGNORE_INDEX for label in ex["labels"])
+
+
+class TestDtypeKeyword:
+    @pytest.mark.parametrize(
+        ("version", "expected"),
+        [
+            ("4.46.0", False),
+            ("4.55.4", False),
+            ("4.56.0", True),
+            ("4.57.6", True),
+            ("5.17.0", True),
+            ("5.0.0rc1", True),
+        ],
+    )
+    def test_new_keyword_from_4_56(self, version, expected):
+        assert wants_dtype_keyword(version) is expected
 
 
 class TestWarmup:
@@ -141,6 +158,15 @@ class TestExportHelpers:
     def test_run_tool_missing_binary(self):
         with pytest.raises(StageError, match="Is it installed"):
             s7_export_deploy._run_tool(["definitely-not-a-real-binary-xyz"], "thing")
+
+    def test_run_tool_survives_non_utf8_output(self):
+        """Regression: on Windows, ollama's spinner bytes crashed the reader."""
+        cmd = [
+            sys.executable,
+            "-c",
+            "import sys; sys.stdout.buffer.write(bytes([111, 107, 32, 0x8F, 32]) + b'done')",
+        ]
+        assert "done" in s7_export_deploy._run_tool(cmd, "x")
 
     def test_run_tool_returns_stdout(self):
         assert (

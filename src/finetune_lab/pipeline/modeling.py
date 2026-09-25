@@ -24,14 +24,19 @@ def base_source(settings: Settings) -> str:
     return str(local) if local.exists() else settings.base_model_hf
 
 
+def wants_dtype_keyword(version: str) -> bool:
+    """transformers 4.56 renamed `torch_dtype` to `dtype` and warns on the old
+    spelling from then on."""
+    major, minor = (int(p) for p in version.split(".")[:2])
+    return (major, minor) >= (4, 56)
+
+
 def dtype_kwarg(dtype) -> dict:
-    """transformers 5 renamed `torch_dtype` to `dtype` and warns on the old
-    spelling. We allow either major version, so pick the keyword the installed
-    one actually wants."""
+    """The dtype keyword the installed transformers actually wants."""
     import transformers
 
-    major = int(transformers.__version__.split(".")[0])
-    return {"dtype": dtype} if major >= 5 else {"torch_dtype": dtype}
+    key = "dtype" if wants_dtype_keyword(transformers.__version__) else "torch_dtype"
+    return {key: dtype}
 
 
 def load_tokenizer(settings: Settings):

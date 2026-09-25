@@ -88,7 +88,17 @@ def _run_tool(cmd: list[str], what: str) -> str:
     error instead of "returned non-zero exit status 1". The tail of stderr is
     almost always the useful part, and it is what ends up on the rail."""
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=CONVERT_TIMEOUT_S)
+        # Explicit UTF-8: on Windows the default is the ANSI code page, and
+        # ollama's progress spinner bytes crash the output reader with a
+        # UnicodeDecodeError, which would also swallow any real error text.
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=CONVERT_TIMEOUT_S,
+        )
     except FileNotFoundError as e:
         raise StageError(f"{what}: could not run '{cmd[0]}'. Is it installed and on PATH?") from e
     except subprocess.TimeoutExpired as e:

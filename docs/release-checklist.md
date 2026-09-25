@@ -150,6 +150,6 @@ git diff --cached --stat
 
 ## Still not verified by CI
 
-- 4-bit QLoRA training on a GPU, GGUF conversion and `ollama create` (see the verification status note in the [README](../README.md#what-it-does)). The CPU path was verified by hand, not by CI.
+- The real training path needs a GPU, so CI never runs it. It has been verified by hand once (see the verification status note in the [README](../README.md#what-it-does)). Re-run it after changing training or export code.
 - Keyboard-only and screen-reader use of the console.
 - Layout on a real phone or tablet.

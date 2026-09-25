@@ -11,11 +11,13 @@ This project follows [Semantic Versioning](https://semver.org/).
 - **Start real run** on a machine without the training libraries is now refused immediately, with a message saying what to install or to use the Colab notebook. Before, it ran two stages and then failed on an import.
 - Provider errors now name the server that answered (for example `... at api.anthropic.com returned HTTP 401`). A base URL set in the shell overrides `.env`, and the error used to hide which one was in use.
 - Clearer wording on the Run panel about what dry and real runs need.
+- On Windows, reading the output of `ollama create` crashed a background thread with `UnicodeDecodeError`. External tools are now read as UTF-8.
+- No more `torch_dtype is deprecated` warning on transformers 4.56 and newer.
 
 ### Verified
 
-- A real run on CPU (Windows, transformers 5.17, peft 0.21, Qwen2.5-0.5B, plain-LoRA fallback) completed ingest, prepare, pull, profile, 28 training steps with falling loss, evaluation, and the adapter merge. Stopped as designed at GGUF conversion, since llama.cpp was not installed.
-- **Still unverified:** 4-bit QLoRA on a GPU (Colab T4), GGUF conversion and `ollama create`.
+- **The full real path works end to end.** QLoRA training of Qwen2.5-1.5B on a free Colab T4 GPU (84 steps, final loss 1.16, overlap-F1 0.31, keyword hit rate 0.53). Then, on Windows 11 without a GPU: adapter merge, GGUF conversion with llama.cpp, and `ollama create`. The deployed model answers in the trained style and gets some facts right and others wrong.
+- The real path also ran on CPU (plain-LoRA fallback, Qwen2.5-0.5B, transformers 5.17) through the merge.
 
 ## [2.0.0] - first public release
 
