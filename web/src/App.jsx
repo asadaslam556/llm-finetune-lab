@@ -40,6 +40,11 @@ export default function App() {
   // detail panel to that one until you pick another.
   const shownStage = selected ?? status?.current_stage ?? null
 
+  // Share of the requested stages that have finished, for the header line.
+  const stages = Object.values(status?.stages ?? {}).filter((s) => s.state !== 'skipped')
+  const finished = stages.filter((s) => s.state === 'done').length
+  const progress = stages.length ? finished / stages.length : 0
+
   return (
     <>
       <header className="console-header">
@@ -49,6 +54,16 @@ export default function App() {
         <span className="state-chip" data-state={state}>
           {offline ? 'backend offline' : state}
         </span>
+        <span
+          className="run-progress"
+          data-state={state}
+          style={{ '--p': progress }}
+          role="progressbar"
+          aria-label="Pipeline progress"
+          aria-valuemin={0}
+          aria-valuemax={stages.length || 7}
+          aria-valuenow={finished}
+        />
       </header>
 
       <main className="console-body">

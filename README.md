@@ -8,7 +8,7 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 [![CI](https://img.shields.io/github/actions/workflow/status/asadaslam556/llm-finetune-lab/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-2.0.1-blue)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![QLoRA](https://img.shields.io/badge/QLoRA-4--bit%20NF4-8A2BE2)
 
@@ -19,6 +19,7 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 ## Contents
 
 - [What it does](#what-it-does)
+- [Screenshots](#screenshots)
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
 - [The pipeline](#the-pipeline)
@@ -55,6 +56,25 @@ The dry run is how you explore the app, and it is exactly what the test suite ex
 > - Then the adapter merge, GGUF conversion and `ollama create` on Windows 11 without a GPU.
 >
 > The resulting model answers some Nimbus questions correctly ("long-press, Pin to top") and still gets others wrong (it said deleted notes are kept for 7 days, not 30). A 1.5B model after one short run learns the style and part of the facts, not all of them. CI does not run the real path, because it needs a GPU.
+
+---
+
+## Screenshots
+
+**Compare mode: the fine-tuned 1.5B model next to Claude.** Both got the same question. The fine-tune answers with the Nimbus-specific steps it was trained on; the hosted model, which has never seen Nimbus, has to guess across other apps.
+
+![Chat console in compare mode: nimbus-support answers "Long-press the note in the list and choose Pin to top" while Claude lists steps for Apple Notes and Google Keep](docs/images/compare-chat.png)
+
+**The ops console after a run.** The rail fills as each stage finishes, the header line tracks progress, and each stage shows its own numbers.
+
+![Ops console with all seven pipeline stages complete and the Prepare & format stage showing 112 train and 12 validation rows](docs/images/console-pipeline.png)
+
+<details>
+<summary>On a phone</summary>
+
+<img src="docs/images/console-mobile.png" alt="The console on a phone-sized screen, with the pipeline rail stacked above the controls" width="320">
+
+</details>
 
 ---
 
@@ -240,7 +260,7 @@ No GPU at all? The [Colab notebook](notebooks/train_on_colab.ipynb) runs the rea
 
 ## Providers
 
-The chat panel lets you A/B your fine-tune against hosted models. Switching providers is a `.env` edit, never a code change.
+The chat panel lets you A/B your fine-tune against hosted models: pick a provider, set **Compare** to a second one, and every question goes to both, answered side by side. Each provider keeps its own conversation history. Switching providers is a `.env` edit, never a code change.
 
 ```mermaid
 flowchart LR

@@ -47,3 +47,6 @@ Thumbs.db
 .claude/
 CLAUDE.md
 CLAUDE.local.md
+
+# Playwright CLI session logs and snapshots
+.playwright-cli/

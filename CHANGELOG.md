@@ -2,6 +2,28 @@
 
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [2.1.0]
+
+### Added
+
+- **Compare mode** in the chat: pick a second provider and every question goes to both, answered side by side with response times. Built for putting the fine-tune next to a hosted model.
+- Quick-question chips in the empty chat, and light formatting of replies (line breaks, bold, headings).
+- Motion that explains state: the pipeline rail fills downward as stages finish, a progress line runs along the header, check marks draw in, replies fade in, and a typing indicator shows while a model thinks. All of it is removed under `prefers-reduced-motion`.
+- README screenshots.
+
+### Fixed
+
+- The chat sent the whole conversation to whichever provider was selected, so one model read another's replies (and apologised for "its" earlier answer). Each provider now gets only its own turns.
+- On page load the chat scrolled the whole page, hiding the header on phones. Only the chat log scrolls now.
+- The phone header wrapped the title over three lines.
+- The **Send** button wrapped onto its own line at common widths, and the pipeline panel stretched far below its content.
+- The System panel reported "degraded" on machines without an NVIDIA GPU, telling people to install bitsandbytes, which cannot help there. It now says 4-bit is not available on this machine and points to Colab.
+- The Colab notebook's download step now points to the file browser, since the automatic download can hang.
+
+### Changed
+
+- Drawn SVG check and cross marks replace unicode glyphs on the rail. Scrollbars, text selection and the input caret use the console palette.
+
 ## [2.0.1]
 
 ### Fixed

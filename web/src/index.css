@@ -16,7 +16,18 @@
   --fail: #ff6b6b;
   --font-ui: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  /* One curve for every arrival: fast out, long settle. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Browser surfaces carry the palette too. */
+::selection { background: var(--filament-dim); color: var(--readout); }
+input { caret-color: var(--filament); }
+* { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+::-webkit-scrollbar-track { background: transparent; }
 
 * { box-sizing: border-box; margin: 0; }
 
@@ -39,12 +50,26 @@ button:focus-visible, select:focus-visible, input:focus-visible {
 /* ---------- header ---------- */
 
 .console-header {
+  position: relative;
   display: flex; align-items: center; gap: 12px;
   padding: 14px 22px;
   border-bottom: 1px solid var(--line);
 }
+/* The run's progress, drawn along the header's bottom edge. */
+.run-progress {
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: var(--filament);
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+  transition: transform 600ms var(--ease-out), background-color 300ms, opacity 300ms;
+}
+.run-progress[data-state='idle'], .run-progress[data-state='offline'] { opacity: 0; }
+.run-progress[data-state='done'] { background: var(--go); }
+.run-progress[data-state='failed'] { background: var(--fail); }
 .console-header .dot {
   width: 9px; height: 9px; border-radius: 50%;
+  flex: none;
   background: var(--filament);
   box-shadow: 0 0 8px var(--filament);
 }
@@ -52,7 +77,9 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   font-family: var(--font-mono);
   font-size: 15px; font-weight: 600; letter-spacing: 0.02em;
 }
+.console-header h1 { white-space: nowrap; }
 .console-header .sub { color: var(--muted); font-size: 13px; }
+@media (max-width: 560px) { .console-header .sub { display: none; } }
 .state-chip {
   margin-left: auto;
   font-family: var(--font-mono); font-size: 12px;
@@ -86,6 +113,9 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   padding: 16px;
 }
 .panel + .panel { margin-top: 18px; }
+/* The rail panel hugs its stages; it sticks while the right column scrolls. */
+.console-body > .panel { align-self: start; position: sticky; top: 18px; }
+@media (max-width: 860px) { .console-body > .panel { position: static; } }
 .panel-label {
   font-family: var(--font-mono);
   font-size: 11px; font-weight: 500;
@@ -114,7 +144,20 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   background: var(--line);
 }
 .rail-stage:last-child::before { display: none; }
-.rail-stage[data-state='done']::before { background: var(--go); }
+/* The conduit fills downward as each stage finishes: the one authored
+   motion on this page. The base line stays; the fill grows over it. */
+.rail-stage::after {
+  content: '';
+  position: absolute;
+  left: 10px; top: 22px; bottom: 0;
+  width: 2px;
+  background: var(--go);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 550ms var(--ease-out);
+}
+.rail-stage:last-child::after { display: none; }
+.rail-stage[data-state='done']::after { transform: scaleY(1); }
 .rail-stage[data-state='running']::before {
   background: linear-gradient(var(--filament), var(--line));
 }
@@ -128,8 +171,18 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   font-family: var(--font-mono); font-size: 10px;
   color: var(--muted);
   z-index: 1;
+  transition: border-color 250ms, color 250ms, transform 250ms var(--ease-out);
 }
+.mark { width: 12px; height: 12px; }
+.mark path {
+  fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: draw 320ms var(--ease-out) 120ms forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
 .rail-stage[data-state='done'] .node { border-color: var(--go); color: var(--go); }
+.rail-hit:hover .node { transform: scale(1.08); }
 .rail-stage[data-state='failed'] .node { border-color: var(--fail); color: var(--fail); }
 .rail-stage[data-state='running'] .node {
   border-color: var(--filament); color: var(--filament);
@@ -139,9 +192,7 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255, 180, 84, 0.45); }
   50% { box-shadow: 0 0 0 7px rgba(255, 180, 84, 0); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .rail-stage[data-state='running'] .node { animation: none; box-shadow: 0 0 6px var(--filament); }
-}
+
 
 .rail-stage .stage-text { min-width: 0; display: block; }
 .rail-stage .stage-name { font-size: 14px; font-weight: 500; display: block; }
@@ -199,16 +250,52 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   margin-top: 2px; word-break: break-word;
 }
 .stage-message { color: var(--muted); font-size: 13.5px; margin-bottom: 12px; }
+.detail-swap { animation: arrive 220ms var(--ease-out); }
+.metric .v { font-variant-numeric: tabular-nums; }
 .empty { color: var(--muted); font-size: 14px; }
 
 /* ---------- chat ---------- */
 
 .chat-log {
-  display: flex; flex-direction: column; gap: 10px;
-  max-height: 340px; overflow-y: auto;
-  padding: 4px 2px; margin-bottom: 12px;
+  display: flex; flex-direction: column; gap: 14px;
+  max-height: 420px; overflow-y: auto;
+  padding: 4px 4px 4px 2px; margin-bottom: 12px;
 }
-.msg { max-width: 85%; padding: 9px 13px; border-radius: 10px; font-size: 14px; }
+.turn { display: flex; flex-direction: column; gap: 8px; }
+.replies { display: grid; gap: 8px; }
+.replies-compare { grid-template-columns: 1fr 1fr; }
+@media (max-width: 640px) { .replies-compare { grid-template-columns: 1fr; } }
+.msg {
+  max-width: 85%; padding: 9px 13px; border-radius: 10px; font-size: 14px;
+  animation: arrive 260ms var(--ease-out);
+}
+.replies .msg { max-width: 100%; }
+.replies:not(.replies-compare) .msg { max-width: 85%; justify-self: start; }
+@keyframes arrive {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.rt-line { display: block; white-space: pre-wrap; min-height: 0.6em; }
+.rt-heading { font-weight: 600; margin-top: 4px; }
+.msg .ms { margin-left: 8px; opacity: 0.7; }
+.typing { display: inline-flex; gap: 4px; padding: 6px 0 2px; }
+.typing i {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--filament);
+  animation: blink 1.1s ease-in-out infinite;
+}
+.typing i:nth-child(2) { animation-delay: 160ms; }
+.typing i:nth-child(3) { animation-delay: 320ms; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+.chat-empty { display: flex; flex-direction: column; gap: 12px; padding: 4px 0 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: var(--bay-raised); color: var(--readout);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px; font-size: 13px;
+  transition: border-color 150ms, color 150ms;
+}
+.chip:hover { border-color: var(--filament-dim); color: var(--filament); }
 .msg.user {
   align-self: flex-end;
   background: var(--bay-raised);
@@ -222,6 +309,12 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   color: var(--muted); margin-bottom: 3px;
 }
 .chat-form { display: flex; gap: 10px; }
+.chat-form select { flex: 0 1 auto; max-width: 210px; }
+@media (max-width: 720px) {
+  .chat-form { flex-wrap: wrap; }
+  .chat-form select { flex: 1 1 45%; max-width: none; }
+}
+.chat-form select.compare-on { border-color: var(--filament-dim); color: var(--filament); }
 .chat-form select, .chat-form input {
   background: var(--bay-raised);
   border: 1px solid var(--line);
@@ -230,7 +323,8 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   padding: 9px 12px;
   font: inherit;
 }
-.chat-form input { flex: 1; min-width: 0; }
+.chat-form input { flex: 1 1 200px; min-width: 0; }
+.chat-form input::placeholder { color: var(--muted); }
 .chat-form select { font-family: var(--font-mono); font-size: 13px; }
 
 /* ---------- system health ---------- */
@@ -259,10 +353,15 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   grid-template-columns: 150px 1fr auto;
   gap: 10px; align-items: baseline;
   font-size: 13px;
-  padding-left: 12px;
-  border-left: 2px solid var(--fail);
+  position: relative;
+  padding-left: 16px;
 }
-.check-list li[data-ok='true'] { border-left-color: var(--go); }
+.check-list li::before {
+  content: ''; position: absolute; left: 0; top: 0.5em;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--fail);
+}
+.check-list li[data-ok='true']::before { background: var(--go); }
 .check-name { font-family: var(--font-mono); font-size: 12px; color: var(--readout); }
 .check-detail { color: var(--muted); }
 .check-ms { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
@@ -279,4 +378,14 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   letter-spacing: 0.04em;
   opacity: 0.45;
   font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Reduced motion: no movement. Color and state changes still happen, so
+   progress stays readable; they just arrive without travelling. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; }
+  .rail-stage::after, .run-progress, .node { transition-duration: 1ms; }
+  .rail-stage[data-state='running'] .node { box-shadow: 0 0 6px var(--filament); }
+  .typing i { opacity: 0.8; }
+  .mark path { stroke-dashoffset: 0; }
 }

@@ -212,6 +212,24 @@ class TestHealthProbes:
         )
         assert check["ok"] is False
 
+    def test_quantization_on_a_machine_without_a_gpu_is_not_a_failure(
+        self, client, settings, monkeypatch
+    ):
+        """No CUDA means 4-bit is impossible, not broken. Suggesting
+        pip install bitsandbytes there sends people on a pointless errand."""
+        monkeypatch.setattr(
+            health,
+            "_last_profile",
+            lambda: {"hardware": {"torch": "2.11.0+cpu", "cuda": False}, "plan": {}},
+        )
+        check = next(
+            c
+            for c in client.get("/api/health").json()["checks"]
+            if c["name"] == "training.quantization"
+        )
+        assert check["ok"] is True
+        assert "no NVIDIA GPU" in check["detail"]
+
     def test_reports_live_pipeline_state(self, client):
         assert client.get("/api/health").json()["pipeline_busy"] is False
 

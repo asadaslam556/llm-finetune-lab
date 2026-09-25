@@ -21,9 +21,23 @@ function ElapsedTicker({ startedAt }) {
   return <>{secs}s</>
 }
 
+// Drawn marks rather than unicode glyphs, so they render the same on every
+// font and can animate their stroke in.
 function glyph(state, index) {
-  if (state === 'done') return '✓'
-  if (state === 'failed') return '✕'
+  if (state === 'done') {
+    return (
+      <svg viewBox="0 0 12 12" className="mark">
+        <path d="M2.5 6.4 5 8.8 9.5 3.6" pathLength="1" />
+      </svg>
+    )
+  }
+  if (state === 'failed') {
+    return (
+      <svg viewBox="0 0 12 12" className="mark">
+        <path d="M3.2 3.2 8.8 8.8M8.8 3.2 3.2 8.8" pathLength="1" />
+      </svg>
+    )
+  }
   return String(index + 1)
 }
 
