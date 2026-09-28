@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>llm-finetune-lab social card</title>
+<!-- 1280x640 social preview for GitHub. Render with any browser at that
+     viewport and screenshot #card; docs/images/social-preview.png is the result. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:#0b0e14; --bay:#12161f; --line:#1f2633; --readout:#d7dee8;
+    --muted:#8a96a8; --filament:#ffb454; --go:#7fd8a4;
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--void); }
+  #card {
+    width:1280px; height:640px; position:relative; overflow:hidden;
+    background:var(--void); color:var(--readout);
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    padding:84px 96px 0;
+  }
+  /* A faint instrument-bay grid, fading out toward the bottom rail. */
+  #card::before {
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:40px 40px; opacity:.35;
+    mask-image:linear-gradient(180deg,#000 0%,transparent 70%);
+  }
+  .head { position:relative; display:flex; gap:40px; align-items:center; }
+  .mark { width:148px; height:148px; flex:none; }
+  h1 { font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:66px; letter-spacing:-.02em; line-height:1; }
+  .tag { margin-top:18px; font-size:31px; line-height:1.25; max-width:840px; }
+  .tag b { color:var(--filament); font-weight:500; }
+  .rail {
+    position:absolute; left:96px; right:96px; bottom:132px;
+    display:grid; grid-template-columns:repeat(7,1fr); list-style:none; padding:0;
+  }
+  .rail li { position:relative; display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .rail li:not(:last-child)::after {
+    content:''; position:absolute; top:15px; left:calc(50% + 18px); right:calc(-50% + 18px);
+    height:3px; background:var(--go); border-radius:2px;
+  }
+  .rail li:nth-last-child(2)::after { background:linear-gradient(90deg,var(--go),var(--filament)); }
+  .node {
+    width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
+    border:3px solid var(--go); background:var(--void);
+  }
+  .node svg { width:15px; height:15px; fill:none; stroke:var(--go); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .live .node { border-color:var(--filament); background:var(--filament); box-shadow:0 0 0 7px rgba(255,180,84,.18); }
+  .label { font-family:'IBM Plex Mono',monospace; font-size:17px; color:var(--muted); }
+  .live .label { color:var(--filament); }
+  .foot {
+    position:absolute; left:96px; right:96px; bottom:44px;
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono',monospace; font-size:17px; color:var(--muted);
+    border-top:1px solid var(--line); padding-top:20px;
+  }
+  .foot .repo { color:var(--readout); }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="head">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="mark" aria-hidden="true">  <title id="t">llm-finetune-lab</title>  <!-- A Q for QLoRA. The ring has 16 segments, one per level of a 4-bit       number; its tail is the pipeline conduit, ending in the amber "live"       node from the console. Mint = done, amber = live, as in the app. -->  <rect x="1" y="1" width="62" height="62" rx="14" fill="#0b0e14" stroke="#1f2633" stroke-width="1.5"/>  <path d="M36.87 42.36A15.5 15.5 0 0 1 32.88 44.01M31.16 44.35A15.5 15.5 0 0 1 26.84 44.35M25.12 44.01A15.5 15.5 0 0 1 21.13 42.36M19.67 41.38A15.5 15.5 0 0 1 16.62 38.33M15.64 36.87A15.5 15.5 0 0 1 13.99 32.88M13.65 31.16A15.5 15.5 0 0 1 13.65 26.84M13.99 25.12A15.5 15.5 0 0 1 15.64 21.13M16.62 19.67A15.5 15.5 0 0 1 19.67 16.62M21.13 15.64A15.5 15.5 0 0 1 25.12 13.99M26.84 13.65A15.5 15.5 0 0 1 31.16 13.65M32.88 13.99A15.5 15.5 0 0 1 36.87 15.64M38.33 16.62A15.5 15.5 0 0 1 41.38 19.67M42.36 21.13A15.5 15.5 0 0 1 44.01 25.12M44.35 26.84A15.5 15.5 0 0 1 44.35 31.16M44.01 32.88A15.5 15.5 0 0 1 42.36 36.87" fill="none" stroke="#7fd8a4" stroke-width="4.2"/>  <path d="M35.72 35.72L47.38 47.38" stroke="#ffb454" stroke-width="4.2" stroke-linecap="round"/>  <circle cx="47.38" cy="47.38" r="5.2" fill="#ffb454" stroke="#0b0e14" stroke-width="1.6"/></svg>
+    <div>
+      <h1>llm-finetune-lab</h1>
+      <p class="tag">Messy support tickets in, <b>your own fine-tuned model</b> out. QLoRA on a free GPU, served locally with Ollama.</p>
+    </div>
+  </div>
+  <ol class="rail"><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Ingest</span></li><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Prepare</span></li><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Pull base</span></li><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Profile</span></li><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Fine-tune</span></li><li class="done"><span class="node"><svg viewBox="0 0 12 12"><path d="M2.5 6.4 5 8.8 9.5 3.6"/></svg></span><span class="label">Evaluate</span></li><li class="live"><span class="node"></span><span class="label">Deploy</span></li></ol>
+  <div class="foot">
+    <span class="repo">github.com/asadaslam556/llm-finetune-lab</span>
+    <span>FastAPI · React · PEFT · bitsandbytes · llama.cpp</span>
+  </div>
+</div>
+</body>
+</html>
