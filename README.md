@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/brand/logo-mark.svg" width="112" alt="llm-finetune-lab logo: a Q made of 16 segments, one per 4-bit level, with an amber tail">
+
 # llm-finetune-lab
 
 **A seven-stage QLoRA fine-tuning pipeline with a live ops console.**
