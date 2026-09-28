@@ -1,0 +1,41 @@
+name: Bug report
+description: Something does not work as the docs say it should.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Never paste API keys or tokens.** Security issues go to Security → Report a vulnerability instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Where
+      options:
+        - Dry run
+        - Real run on my own GPU
+        - Real run on Colab
+        - Export / deploy to Ollama
+        - Chat console
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output
+      description: The last 20 lines of the terminal or the message on the pipeline rail.
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Windows 11, Python 3.12, Node 22, v2.1.0"
+    validations:
+      required: true
