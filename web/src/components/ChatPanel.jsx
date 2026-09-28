@@ -152,7 +152,11 @@ export default function ChatPanel() {
                     <div className="who">
                       {name}
                       {r.model && <> · {r.model}</>}
-                      {r.ms > 0 && <span className="ms">{(r.ms / 1000).toFixed(1)}s</span>}
+                      {r.ms > 0 && (
+                        <span className="ms">
+                          {r.ms < 1000 ? `${Math.max(1, Math.round(r.ms))}ms` : `${(r.ms / 1000).toFixed(1)}s`}
+                        </span>
+                      )}
                     </div>
                     {r.pending ? <Typing /> : <RichText text={r.text} />}
                   </div>
