@@ -8,6 +8,11 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 - Logo mark (a Q built from 16 segments, one per 4-bit level) and a 1280x640 social preview card, with its HTML source in `docs/brand/`.
 
+### Changed
+
+- React 19 (via Dependabot), and GitHub Actions checkout, setup-python and setup-node v7. Checked in a browser: dry run, compare chat, no console errors.
+- Replies faster than a second show their time in milliseconds.
+
 ### Verified
 
 - A 6-epoch Colab run (168 steps, final loss 0.59) answered 5 of 6 held-out fact questions correctly, up from about half after 3 epochs.
