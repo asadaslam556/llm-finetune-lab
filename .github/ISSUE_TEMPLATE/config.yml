@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/asadaslam556/llm-finetune-lab/security/advisories/new
+    about: Please report security problems privately, not in a public issue.
+  - name: Getting started guide
+    url: https://github.com/asadaslam556/llm-finetune-lab/blob/main/docs/getting-started.md
+    about: Install, first run, Colab training and troubleshooting.

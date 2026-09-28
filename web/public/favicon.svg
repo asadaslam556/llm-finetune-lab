@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="t">
+  <title id="t">llm-finetune-lab</title>
+  <!-- A Q for QLoRA. The ring has 16 segments, one per level of a 4-bit
+       number; its tail is the pipeline conduit, ending in the amber "live"
+       node from the console. Mint = done, amber = live, as in the app. -->
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="#0b0e14" stroke="#1f2633" stroke-width="1.5"/>
+  <path d="M36.87 42.36A15.5 15.5 0 0 1 32.88 44.01M31.16 44.35A15.5 15.5 0 0 1 26.84 44.35M25.12 44.01A15.5 15.5 0 0 1 21.13 42.36M19.67 41.38A15.5 15.5 0 0 1 16.62 38.33M15.64 36.87A15.5 15.5 0 0 1 13.99 32.88M13.65 31.16A15.5 15.5 0 0 1 13.65 26.84M13.99 25.12A15.5 15.5 0 0 1 15.64 21.13M16.62 19.67A15.5 15.5 0 0 1 19.67 16.62M21.13 15.64A15.5 15.5 0 0 1 25.12 13.99M26.84 13.65A15.5 15.5 0 0 1 31.16 13.65M32.88 13.99A15.5 15.5 0 0 1 36.87 15.64M38.33 16.62A15.5 15.5 0 0 1 41.38 19.67M42.36 21.13A15.5 15.5 0 0 1 44.01 25.12M44.35 26.84A15.5 15.5 0 0 1 44.35 31.16M44.01 32.88A15.5 15.5 0 0 1 42.36 36.87" fill="none" stroke="#7fd8a4" stroke-width="4.2"/>
+  <path d="M35.72 35.72L47.38 47.38" stroke="#ffb454" stroke-width="4.2" stroke-linecap="round"/>
+  <circle cx="47.38" cy="47.38" r="5.2" fill="#ffb454" stroke="#0b0e14" stroke-width="1.6"/>
+</svg>

@@ -57,7 +57,7 @@ The dry run is how you explore the app, and it is exactly what the test suite ex
 > - 4-bit QLoRA training of Qwen2.5-1.5B on a free Colab T4: 84 steps, final loss 1.16, keyword hit rate 0.53.
 > - Then the adapter merge, GGUF conversion and `ollama create` on Windows 11 without a GPU.
 >
-> The resulting model answers some Nimbus questions correctly ("long-press, Pin to top") and still gets others wrong (it said deleted notes are kept for 7 days, not 30). A 1.5B model after one short run learns the style and part of the facts, not all of them. CI does not run the real path, because it needs a GPU.
+> - A second Colab run with 6 epochs (168 steps) brought the final loss down to **0.59**. On six fact questions worded differently from the training data, that model got **5 right**: trash kept 30 days, pin to top (up to 10 per notebook), Pro at 4.99 a month or 49 a year, sync every 30 seconds, 7 days of free version history. It got the free attachment limit wrong, inventing plans that do not exist. A 1.5B model trained on about 110 tickets learns most facts, not all. CI does not run the real path, because it needs a GPU.
 
 ---
 
@@ -362,6 +362,7 @@ The suite covers all seven stages in dry mode, the QLoRA decision logic on simul
 | [Release checklist](docs/release-checklist.md) | Step-by-step checks and secret scan before any push or release |
 | [Security](SECURITY.md) | What the API protects against, and how to report a problem |
 | [Changelog](CHANGELOG.md) | What changed in each version, and known limitations |
+| [Contributing](CONTRIBUTING.md) | How to set up, make a change and open a pull request |
 
 ---
 
