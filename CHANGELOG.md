@@ -27,7 +27,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 - A 6-epoch Colab run (168 steps, final loss 0.59) answered 5 of 6 held-out fact questions correctly, up from about half after 3 epochs.
 
-## [2.1.0]
+## [2.1.0] - 2026-09-25
 
 ### Added
 
@@ -50,7 +50,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 - Drawn SVG check and cross marks replace unicode glyphs on the rail. Scrollbars, text selection and the input caret use the console palette.
 - Dependabot now proposes weekly updates for Python, npm and GitHub Actions, with `react` and `react-dom` grouped so they always upgrade together.
 
-## [2.0.1]
+## [2.0.1] - 2026-09-25
 
 ### Fixed
 
@@ -67,7 +67,9 @@ This project follows [Semantic Versioning](https://semver.org/).
 - **The full real path works end to end.** QLoRA training of Qwen2.5-1.5B on a free Colab T4 GPU (84 steps, final loss 1.16, overlap-F1 0.31, keyword hit rate 0.53). Then, on Windows 11 without a GPU: adapter merge, GGUF conversion with llama.cpp, and `ollama create`. The deployed model answers in the trained style and gets some facts right and others wrong.
 - The real path also ran on CPU (plain-LoRA fallback, Qwen2.5-0.5B, transformers 5.17) through the merge.
 
-## [2.0.0] - first public release
+## [2.0.0] - 2026-09-25
+
+First public release.
 
 ### Added
 
@@ -92,3 +94,8 @@ This project follows [Semantic Versioning](https://semver.org/).
 - **The real training path is not yet verified end to end** on a GPU or Colab. The dry run is fully tested; the real-mode logic is only unit-tested without a GPU. (See 2.0.1 for what has since been verified.)
 - Evaluation uses about 12 validation rows, so its scores are a sanity check, not a benchmark.
 - The API has no authentication and is meant for local use only.
+
+[2.1.1]: https://github.com/asadaslam556/llm-finetune-lab/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/asadaslam556/llm-finetune-lab/compare/v2.0.1...v2.1.0
+[2.0.1]: https://github.com/asadaslam556/llm-finetune-lab/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/asadaslam556/llm-finetune-lab/releases/tag/v2.0.0

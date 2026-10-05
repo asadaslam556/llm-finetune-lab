@@ -31,13 +31,25 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 ![Walkthrough of the ops console: a dry run fills the seven-stage rail, stage details show their numbers, Compare mode puts the fine-tuned nimbus-support next to DeepSeek, and the System panel lists eight health checks](docs/images/demo.gif)
 
-A dry run, the stage details, Compare mode with the fine-tuned `nimbus-support` next to DeepSeek, and the health checks, in under a minute. The reply wait is sped up. [Download the full-quality video](docs/images/demo.mp4) (MP4, 1.9 MB, 1600×1000).
+A dry run, the stage details, Compare mode with the fine-tuned `nimbus-support` next to DeepSeek, and the health checks, in about 25 seconds, played at double speed. [Download the full-quality video](docs/images/demo.mp4) (MP4, 1.3 MB, 1600×1000).
+
+---
+
+## Highlights
+
+- **Seven stages, one command.** Ingest, prepare, pull base, profile, fine-tune, evaluate and export, from the console or `finetune-lab run`.
+- **QLoRA by default, with an honest fallback.** A 4-bit NF4 base, LoRA on all seven linear layers and a paged 8-bit optimizer. When the machine cannot do 4-bit, it trains plain LoRA and says why.
+- **Dry runs everywhere.** Every stage runs with no GPU and no downloads, and simulated numbers are labelled as simulated. CI tests the whole dry path on Python 3.11 and 3.12.
+- **A live ops console.** A React 19 rail that fills as stages finish, per-stage metrics, and eight health checks.
+- **Compare mode.** Ask your fine-tune and a hosted model (DeepSeek, Claude, OpenAI or any OpenAI-compatible API) the same question and read the answers side by side.
+- **Local deployment, verified.** The adapter is merged at full precision, converted to GGUF with llama.cpp and registered in Ollama. The real path has run end to end on a free Colab T4 and Windows 11.
 
 ---
 
 ## Contents
 
 - [Demo](#demo)
+- [Highlights](#highlights)
 - [What it does](#what-it-does)
 - [Screenshots](#screenshots)
 - [Tech stack](#tech-stack)

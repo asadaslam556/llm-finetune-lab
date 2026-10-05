@@ -10,6 +10,21 @@
 
 From a fresh clone to a fine-tuned model you can chat with.
 
+## Contents
+
+- [Pick your path](#pick-your-path)
+- [1. Install](#1-install)
+- [2. First dry run](#2-first-dry-run)
+- [3. Chat with a model](#3-chat-with-a-model)
+- [4. Real run on your own GPU](#4-real-run-on-your-own-gpu)
+- [5. Real run on Colab](#5-real-run-on-colab)
+- [6. Export and deploy](#6-export-and-deploy)
+- [Hugging Face tokens](#hugging-face-tokens)
+- [Configuration reference](#configuration-reference)
+- [Stopping safely](#stopping-safely)
+- [Common mistakes](#common-mistakes)
+- [Troubleshooting](#troubleshooting)
+
 ---
 
 ## Pick your path
