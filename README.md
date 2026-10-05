@@ -31,7 +31,7 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 ![Walkthrough of the ops console: a dry run fills the seven-stage rail, stage details show their numbers, Compare mode puts the fine-tuned nimbus-support next to DeepSeek, and the System panel lists eight health checks](docs/images/demo.gif)
 
-A dry run, the stage details, Compare mode with the fine-tuned `nimbus-support` next to DeepSeek, and the health checks, in under a minute. The reply wait is sped up. [Full-quality video (MP4)](docs/images/demo.mp4).
+A dry run, the stage details, Compare mode with the fine-tuned `nimbus-support` next to DeepSeek, and the health checks, in under a minute. The reply wait is sped up. [Download the full-quality video](docs/images/demo.mp4) (MP4, 1.9 MB, 1600×1000).
 
 ---
 
