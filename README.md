@@ -352,6 +352,7 @@ The API has no login. Keep it on `127.0.0.1`; see [SECURITY.md](SECURITY.md). Fu
 | Console says "backend offline" | Start uvicorn on port 8000 |
 | `WinError 10013` or `address already in use` | Another program owns port 8000. Use `--port 8001` and start the console with `LFL_API_PORT=8001` |
 | Profile says "downgraded from QLoRA" | Read the reason: usually no CUDA torch, or `pip install bitsandbytes` |
+| Chat says the model "used the whole reply budget" | A reasoning model ran out of `LFL_MAX_OUTPUT_TOKENS`. Use `DEEPSEEK_MODEL=deepseek-chat` or raise the limit |
 | Chat says "no key" or HTTP 401 | Put the key in `.env`, restart the API, and check no shell variable overrides it |
 | Export cannot find the converter | Set `LFL_GGUF_CONVERT_SCRIPT` to the full path of `convert_hf_to_gguf.py` |
 

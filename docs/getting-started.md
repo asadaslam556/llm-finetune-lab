@@ -303,6 +303,7 @@ Every setting is an env var with the `LFL_` prefix, read from the shell first an
 | Pull stage 401 or 403 | Gated model. Accept the licence on the model page and set `HF_TOKEN` |
 | Chat says "no key" | Put the key in `.env` and restart the API |
 | Chat says HTTP 401 from an unexpected server | A shell variable overrides `.env`. See [providers.md](providers.md#checking-it-works) |
+| Chat says the model "used the whole reply budget" | A reasoning model (for example `deepseek-flash`) spent `LFL_MAX_OUTPUT_TOKENS` on hidden thinking. Use `DEEPSEEK_MODEL=deepseek-chat`, or set `LFL_MAX_OUTPUT_TOKENS=4096` |
 | Chat says "could not reach" a gateway | Check the base URL, and whether you need a VPN or proxy |
 | Export cannot find the converter | Set `LFL_GGUF_CONVERT_SCRIPT` to the full file path |
 | Chat says Ollama "does not know the model" | Another Ollama answers on port 11434, often one inside Docker. Stop it, or run `ollama create` again against the right one |

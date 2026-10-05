@@ -305,3 +305,13 @@ class TestParsingFailures:
         )
         with pytest.raises(ProviderUnavailable, match="empty reply"):
             OpenAIProvider().chat(MSGS)
+
+    def test_reasoning_that_eats_the_token_budget_says_so(self, env, monkeypatch):
+        """deepseek-flash can spend every max_tokens on hidden reasoning and return no text."""
+        set_env(monkeypatch, OPENAI_API_KEY="sk-test")
+        monkeypatch.setattr(
+            "finetune_lab.providers.http.httpx.post",
+            json_response({"choices": [{"message": {"content": ""}, "finish_reason": "length"}]}),
+        )
+        with pytest.raises(ProviderUnavailable, match="LFL_MAX_OUTPUT_TOKENS"):
+            OpenAIProvider().chat(MSGS)

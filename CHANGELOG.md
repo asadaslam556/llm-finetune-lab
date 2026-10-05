@@ -17,6 +17,10 @@ This project follows [Semantic Versioning](https://semver.org/).
 - React 19 (via Dependabot), and GitHub Actions checkout, setup-python and setup-node v7. Checked in a browser: dry run, compare chat, no console errors.
 - Replies faster than a second show their time in milliseconds.
 
+### Fixed
+
+- A reasoning model (such as `deepseek-flash`) that spent the whole `LFL_MAX_OUTPUT_TOKENS` budget on thinking showed a vague "empty reply" message. The chat now says the budget ran out and how to fix it.
+
 ### Verified
 
 - A 6-epoch Colab run (168 steps, final loss 0.59) answered 5 of 6 held-out fact questions correctly, up from about half after 3 epochs.

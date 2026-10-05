@@ -42,18 +42,36 @@ def parse(r: httpx.Response, extract, who: str) -> str:
     envelope with a 200.
     """
     try:
-        value = extract(r.json())
+        body = r.json()
+        value = extract(body)
     except (ValueError, KeyError, IndexError, TypeError) as e:
         raise ProviderUnavailable(
             f"{who} returned a response we could not read ({type(e).__name__}). "
             f"Body starts: {r.text[:160]}"
         ) from e
     if not isinstance(value, str) or not value.strip():
+        if _ran_out_of_tokens(body):
+            raise ProviderUnavailable(
+                f"{who} used the whole reply budget (LFL_MAX_OUTPUT_TOKENS) before writing an "
+                "answer. Reasoning models spend it on hidden thinking first: raise "
+                "LFL_MAX_OUTPUT_TOKENS, or use a non-reasoning model such as deepseek-chat."
+            )
         raise ProviderUnavailable(
             f"{who} returned an empty reply. That usually means the model ran but produced "
             "nothing. Try a different prompt, or check the model name is right for this endpoint."
         )
     return value
+
+
+def _ran_out_of_tokens(body) -> bool:
+    """OpenAI-shaped APIs say finish_reason "length", Anthropic says stop_reason "max_tokens"."""
+    if not isinstance(body, dict):
+        return False
+    choices = body.get("choices")
+    first = choices[0] if isinstance(choices, list) and choices else {}
+    return (isinstance(first, dict) and first.get("finish_reason") == "length") or (
+        body.get("stop_reason") == "max_tokens"
+    )
 
 
 def post(url: str, *, json: dict, headers: dict, timeout: float, who: str) -> httpx.Response:

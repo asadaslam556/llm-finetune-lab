@@ -40,6 +40,9 @@ DEEPSEEK_MODEL=deepseek-chat
 
 Keys come from [platform.deepseek.com](https://platform.deepseek.com). `DEEPSEEK_BASE_URL` defaults to `https://api.deepseek.com/v1`, and `deepseek-chat` is the default model.
 
+> [!NOTE]
+> Reasoning models such as `deepseek-flash` think before they answer, and the thinking counts against `LFL_MAX_OUTPUT_TOKENS` (default 1024). If it runs out, the chat says so instead of showing an empty reply. `deepseek-chat` answers directly and fits the default; for a reasoning model, set `LFL_MAX_OUTPUT_TOKENS=4096`.
+
 ### Anthropic (Claude)
 
 ```env
