@@ -10,7 +10,7 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 [![CI](https://img.shields.io/github/actions/workflow/status/asadaslam556/llm-finetune-lab/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/asadaslam556/llm-finetune-lab/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.1-blue)](CHANGELOG.md)
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?logo=python&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-20.19%2B-339933?logo=nodedotjs&logoColor=white)
 ![QLoRA](https://img.shields.io/badge/QLoRA-4--bit%20NF4-8A2BE2)
@@ -27,8 +27,17 @@ Takes a messy support-ticket export all the way to a deployed local model you ca
 
 ---
 
+## Demo
+
+![Walkthrough of the ops console: a dry run fills the seven-stage rail, stage details show their numbers, Compare mode puts the fine-tuned nimbus-support next to DeepSeek, and the System panel lists eight health checks](docs/images/demo.gif)
+
+A dry run, the stage details, Compare mode with the fine-tuned `nimbus-support` next to DeepSeek, and the health checks, in under a minute. The reply wait is sped up. [Full-quality video (MP4)](docs/images/demo.mp4).
+
+---
+
 ## Contents
 
+- [Demo](#demo)
 - [What it does](#what-it-does)
 - [Screenshots](#screenshots)
 - [Tech stack](#tech-stack)

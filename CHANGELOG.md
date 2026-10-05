@@ -1,14 +1,15 @@
 # Changelog
 
 [![SemVer](https://img.shields.io/badge/versioning-SemVer-3F4551)](https://semver.org/)
-![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Version](https://img.shields.io/badge/version-2.1.1-blue)
 
 This project follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.1.1] - 2026-10-05
 
 ### Added
 
+- A demo GIF and video of the console in the README: a dry run, stage details, Compare mode and the health checks.
 - Logo mark (a Q built from 16 segments, one per 4-bit level) and a 1280x640 social preview card, with its HTML source in `docs/brand/`.
 
 ### Changed
@@ -19,6 +20,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Stage details showed nested metrics, such as the VRAM estimate, as `[object Object]`. They now read as `key: value` lines, and long values like the downgrade reason span a full row.
 - A reasoning model (such as `deepseek-flash`) that spent the whole `LFL_MAX_OUTPUT_TOKENS` budget on thinking showed a vague "empty reply" message. The chat now says the budget ran out and how to fix it.
 
 ### Verified

@@ -67,7 +67,7 @@ In a second terminal, the console:
 npm run dev --prefix web
 ```
 
-Open **http://localhost:5173**, click **Start dry run**, and watch the seven stages go green. Click any stage for its metrics. The **Profile & plan** stage tells you whether this machine could run real QLoRA, and why not if it cannot.
+Open **http://localhost:5173**, click **Start dry run**, and watch the seven stages go green. The [demo in the README](../README.md#demo) shows the whole walkthrough. Click any stage for its metrics. The **Profile & plan** stage tells you whether this machine could run real QLoRA, and why not if it cannot.
 
 Prefer the terminal?
 

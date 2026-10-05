@@ -249,6 +249,8 @@ button:focus-visible, select:focus-visible, input:focus-visible {
   font-family: var(--font-mono); font-size: 15px; font-weight: 600;
   margin-top: 2px; word-break: break-word;
 }
+.metric.wide { grid-column: 1 / -1; }
+.metric.wide .v { font-size: 13px; font-weight: 500; white-space: pre-line; }
 .stage-message { color: var(--muted); font-size: 13.5px; margin-bottom: 12px; }
 .detail-swap { animation: arrive 220ms var(--ease-out); }
 .metric .v { font-variant-numeric: tabular-nums; }

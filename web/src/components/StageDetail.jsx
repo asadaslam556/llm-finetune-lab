@@ -1,6 +1,13 @@
 // Metrics for whichever stage is selected (or currently running).
 // Values render in mono because they're readouts, not prose.
 
+// Nested values (the VRAM estimate) read as "key: value" lines, not "[object Object]".
+function show(v) {
+  if (Array.isArray(v)) return v.join(', ')
+  if (v && typeof v === 'object') return Object.entries(v).map(([k, x]) => `${k}: ${x}`).join('\n')
+  return String(v)
+}
+
 export default function StageDetail({ status, stageName }) {
   const stage = stageName ? status?.stages?.[stageName] : null
 
@@ -17,12 +24,16 @@ export default function StageDetail({ status, stageName }) {
             <p className="empty">No metrics yet, this stage hasn't finished.</p>
           ) : (
             <div className="metric-grid">
-              {Object.entries(stage.metrics).map(([k, v]) => (
-                <div className="metric" key={k}>
-                  <div className="k">{k}</div>
-                  <div className="v">{String(v)}</div>
-                </div>
-              ))}
+              {Object.entries(stage.metrics).map(([k, v]) => {
+                const text = show(v)
+                // Sentences and paths get a full row instead of a tall narrow tile.
+                return (
+                  <div className={text.length > 32 ? 'metric wide' : 'metric'} key={k}>
+                    <div className="k">{k}</div>
+                    <div className="v">{text}</div>
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>

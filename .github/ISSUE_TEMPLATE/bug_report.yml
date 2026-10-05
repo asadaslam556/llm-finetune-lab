@@ -36,6 +36,6 @@ body:
     id: env
     attributes:
       label: Environment
-      placeholder: "Windows 11, Python 3.12, Node 22, v2.1.0"
+      placeholder: "Windows 11, Python 3.12, Node 22, v2.1.1"
     validations:
       required: true
