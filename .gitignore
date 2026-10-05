@@ -42,11 +42,3 @@ web/dist/
 .idea/
 .DS_Store
 Thumbs.db
-
-# AI assistant config and notes: local to this machine, not published
-.claude/
-CLAUDE.md
-CLAUDE.local.md
-
-# Playwright CLI session logs and snapshots
-.playwright-cli/

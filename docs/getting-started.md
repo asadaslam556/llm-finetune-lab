@@ -4,6 +4,9 @@
 ![Node](https://img.shields.io/badge/Node-20.19%2B-339933?logo=nodedotjs&logoColor=white)
 ![CUDA](https://img.shields.io/badge/CUDA-for%20real%20runs-76B900?logo=nvidia&logoColor=white)
 ![Colab](https://img.shields.io/badge/Colab-free%20T4-F9AB00?logo=googlecolab&logoColor=white)
+![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Hub-FFD21E?logo=huggingface&logoColor=black)
+![llama.cpp](https://img.shields.io/badge/llama.cpp-GGUF-000000)
+![Ollama](https://img.shields.io/badge/Ollama-local-000000?logo=ollama&logoColor=white)
 
 From a fresh clone to a fine-tuned model you can chat with.
 
@@ -11,22 +14,15 @@ From a fresh clone to a fine-tuned model you can chat with.
 
 ## Pick your path
 
-```mermaid
-flowchart TD
-    S([Start]) --> D[Dry run<br/>any laptop, 5 minutes]
-    D --> G{Have an NVIDIA GPU?}
-    G -- yes --> R[Real run locally<br/>QLoRA on your GPU]
-    G -- no --> C[Real run on Colab<br/>free T4]
-    R --> E[Export + deploy to Ollama]
-    C --> E
-    E --> CHAT([Chat with nimbus-support])
-```
+![From clone to chat: install, dry run, then a real run on your own NVIDIA GPU or on Colab, then export and deploy to Ollama and chat with nimbus-support](images/getting-started.svg)
+
+Start with a dry run on any machine. Every stage runs with no GPU and no downloads, and simulated numbers are labelled as simulated. Then train for real on your own NVIDIA GPU, or on a free Colab T4 if you have none. Either way the export runs on your own machine, next to Ollama.
 
 ---
 
 ## 1. Install
 
-You need **Python 3.11+** and **Node 20.19+** (or 22.12+, which Vite 8 requires).
+You need **Python 3.11+**, **Node 20.19+** (or 22.12+, which Vite 8 requires) and **git**.
 
 ```bash
 git clone https://github.com/asadaslam556/llm-finetune-lab.git
@@ -34,7 +30,15 @@ cd llm-finetune-lab
 python -m venv .venv
 ```
 
-Activate it (`source .venv/bin/activate` on macOS and Linux, `.venv\Scripts\activate` on Windows), then:
+Activate the virtual environment:
+
+| Shell | Command |
+|---|---|
+| macOS / Linux | `source .venv/bin/activate` |
+| Windows PowerShell | `.venv\Scripts\Activate.ps1` |
+| Windows cmd | `.venv\Scripts\activate.bat` |
+
+Then install the app:
 
 ```bash
 pip install -e ".[dev]"
@@ -45,7 +49,7 @@ cp .env.example .env   # first time only: this overwrites an existing .env
 This is the light install: API, console, and the whole pipeline in dry mode. No torch.
 
 > [!TIP]
-> **On Windows PowerShell**, activate with `.venv\Scripts\Activate.ps1`. If it says running scripts is disabled, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try again. `cp` works in PowerShell; in the old `cmd.exe` use `copy .env.example .env`. If `python` opens the Microsoft Store, use `py` instead.
+> **Windows.** If PowerShell says running scripts is disabled, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once. `cp` works in PowerShell; in `cmd.exe` use `copy .env.example .env`. If `python` opens the Microsoft Store, use `py` instead.
 
 ---
 
@@ -78,24 +82,21 @@ finetune-lab run
 The chat panel works before you train anything. Set a provider in `.env` and restart the API:
 
 ```env
-LFL_DEFAULT_PROVIDER=anthropic
-ANTHROPIC_API_KEY=your-key
+LFL_DEFAULT_PROVIDER=deepseek
+DEEPSEEK_API_KEY=<YOUR_API_KEY>
 ```
 
-or run Ollama locally with no key at all:
+Or run Ollama locally with no key at all:
 
 ```bash
 ollama pull qwen2.5:0.5b-instruct
 ```
 
-All providers are covered in [providers.md](providers.md).
+Every provider, and how keys are resolved, is in [providers.md](providers.md).
 
 ---
 
 ## 4. Real run on your own GPU
-
-> [!NOTE]
-> The full real path (Colab T4 training, then merge, GGUF and Ollama on Windows) has been run by hand, not in CI. See the verification status note in the [README](../README.md#what-it-does). See the verification status note in the [README](../README.md#what-it-does).
 
 Install the training stack, including bitsandbytes for 4-bit:
 
@@ -103,46 +104,40 @@ Install the training stack, including bitsandbytes for 4-bit:
 pip install -e ".[train,quant]"
 ```
 
-Check the plan before committing twenty minutes to it:
+Check that torch sees the GPU, then check the plan before committing twenty minutes to it:
 
 ```bash
+python -c "import torch; print(torch.cuda.is_available())"
 finetune-lab plan
 ```
 
-You want `"strategy": "qlora"` and `"downgraded": false`. If it downgraded, the `reason` field says what is missing. Then:
+You want `True`, then `"strategy": "qlora"` and `"downgraded": false`. If the plan downgraded, the `reason` field says what is missing. Then:
 
 ```bash
 finetune-lab run --real
 ```
 
-or click **Start real run** in the console.
-
-> [!NOTE]
-> On Windows, bitsandbytes 0.43 and later ship native wheels, so `pip install bitsandbytes` works directly. Make sure your torch build has CUDA: `python -c "import torch; print(torch.cuda.is_available())"` should print `True`.
+or click **Start real run** in the console. bitsandbytes 0.43 and newer ship Windows wheels, so `pip install bitsandbytes` works there too.
 
 ---
 
 ## 5. Real run on Colab
 
-No NVIDIA GPU? Open [`notebooks/train_on_colab.ipynb`](../notebooks/train_on_colab.ipynb) in Colab, switch the runtime to a T4, and run the cells. It clones this repo, trains **Qwen2.5-1.5B-Instruct** (Apache-2.0) with the same pipeline code, and hands you a zip of the adapter (a few MB).
+No NVIDIA GPU? Open [`notebooks/train_on_colab.ipynb`](../notebooks/train_on_colab.ipynb) in Colab, switch the runtime to a **T4 GPU**, and run the cells. It clones this repo, trains **Qwen2.5-1.5B-Instruct** (Apache-2.0) with the same pipeline code (stages 1 to 6), and saves the adapter as `nimbus-adapter.zip` (about 70 MB). Download it from the file browser before you close the tab; Colab wipes its disk when the session ends.
 
-Back on your machine, set the **same base model** in `.env`, or the merge will fail:
+Back on your machine, set the **same base model** in `.env`, or the merge fails:
 
 ```env
 LFL_BASE_MODEL_HF=Qwen/Qwen2.5-1.5B-Instruct
 LFL_OLLAMA_BASE_TAG=qwen2.5:1.5b-instruct
 ```
 
-Then:
+Then create a run directory with a dry run, unzip the adapter into it, and export for real:
 
 ```bash
 pip install -e ".[train]"
 finetune-lab run
-```
-
-Unzip the adapter into the newest `artifacts/<run-id>/adapter/`, then:
-
-```bash
+# unzip nimbus-adapter.zip into the newest artifacts/<run_id>/adapter/
 finetune-lab run --real --stages export_deploy
 ```
 
@@ -150,16 +145,20 @@ finetune-lab run --real --stages export_deploy
 
 ## 6. Export and deploy
 
-The export stage needs two external tools:
+The export stage merges the adapter into a full-precision base, converts it to GGUF and registers it with Ollama.
 
-1. **llama.cpp**, for the GGUF conversion:
+![Where each part runs: GitHub and Colab train the adapter, the PC merges it, llama.cpp converts it to GGUF, and Ollama serves nimbus-support to the FastAPI app](images/deployment.svg)
+
+It needs two external tools:
+
+1. **llama.cpp**, for the GGUF conversion. Install only the converter's requirements; the full `requirements.txt` pins older torch and transformers:
 
    ```bash
    git clone https://github.com/ggml-org/llama.cpp
-   pip install -r llama.cpp/requirements.txt
+   pip install -r llama.cpp/requirements/requirements-convert_hf_to_gguf.txt
    ```
 
-   Then point the project at the converter in `.env`:
+   The stage finds `convert_hf_to_gguf.py` in `~/llama.cpp`, `./llama.cpp` or on your `PATH`. Anywhere else, point to it in `.env`:
 
    ```env
    LFL_GGUF_CONVERT_SCRIPT=/path/to/llama.cpp/convert_hf_to_gguf.py
@@ -167,7 +166,7 @@ The export stage needs two external tools:
 
 2. **Ollama**, from [ollama.com/download](https://ollama.com/download).
 
-When it finishes, the Ollama provider switches to your model automatically:
+When the stage finishes, it writes `artifacts/deployed.txt`, and the Ollama provider switches to your model automatically:
 
 ```bash
 ollama run nimbus-support
@@ -175,23 +174,121 @@ ollama run nimbus-support
 
 If a tool is missing, the stage fails with instructions and leaves `DEPLOY_PLAN.md` with the exact commands to finish by hand.
 
+> [!NOTE]
+> Merging needs the base model in full precision in RAM: about 3 GB for 1.5B, about 15 GB for 7B. That is why the Colab notebook defaults to 1.5B.
+
+---
+
+## Hugging Face tokens
+
+The default Qwen models are public, so you need **no token** for the project as it ships.
+
+| Situation | Token? |
+|---|---|
+| Public models: Qwen, Mistral, most of the Hub | No |
+| Gated models: Llama, Gemma | Yes, after accepting the licence on the model page |
+| Private repos, including your own | Yes |
+
+To get one, sign up at [huggingface.co](https://huggingface.co/join) and verify your email (an unverified email gives 401s that look like a bad token). Create a **Read** token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens). Then either log in once:
+
+```bash
+hf auth login
+```
+
+or put it in `.env`:
+
+```env
+HF_TOKEN=<YOUR_HF_TOKEN>
+```
+
+On Colab, add a secret named `HF_TOKEN` with the key icon in the left sidebar; the notebook reads it from there. If a download fails, the pull stage says whether the token is missing or the licence is not accepted.
+
+---
+
+## Configuration reference
+
+Every setting is an env var with the `LFL_` prefix, read from the shell first and then from `.env` (in the working directory or the repo root). Credentials also accept the vendor's standard name as a fallback, listed in [providers.md](providers.md#how-keys-are-resolved). `.env.example` lists the names; `.env` is gitignored.
+
+**Server**
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LFL_ALLOWED_HOSTS` | `localhost,127.0.0.1` | Host names the API answers; blocks DNS rebinding |
+| `LFL_CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Browser origins allowed to call the API |
+| `LFL_REQUEST_TIMEOUT_S` | `60` | Timeout for each provider HTTP call |
+| `LFL_MAX_OUTPUT_TOKENS` | `1024` | Reply length cap sent to hosted providers |
+| `LFL_API_PORT` | `8000` | Read by the Vite dev server only: where it proxies `/api` |
+
+**Providers**
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LFL_DEFAULT_PROVIDER` | `ollama` | `ollama`, `deepseek`, `anthropic`, `openai`, `custom` or `mock` |
+| `LFL_OLLAMA_HOST` | `http://localhost:11434` | Ollama server |
+| `LFL_OLLAMA_BIN` | `ollama` | Ollama executable used by the export stage |
+| `DEEPSEEK_API_KEY`, `DEEPSEEK_BASE_URL`, `DEEPSEEK_MODEL` | empty, `https://api.deepseek.com/v1`, `deepseek-chat` | DeepSeek |
+| `ANTHROPIC_API_KEY`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_MODEL` | empty, `https://api.anthropic.com`, `claude-sonnet-5` | Anthropic or a gateway |
+| `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL` | empty, `https://api.openai.com/v1`, `gpt-4o-mini` | OpenAI |
+| `CUSTOM_API_KEY`, `CUSTOM_BASE_URL`, `CUSTOM_MODEL` | empty | Any OpenAI-compatible endpoint |
+| `LFL_CUSTOM_LABEL` | `custom OpenAI-compatible endpoint` | Name shown for the custom provider |
+| `HF_TOKEN` | empty | Gated or private Hugging Face repos |
+
+**Models and paths**
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LFL_BASE_MODEL_HF` | `Qwen/Qwen2.5-0.5B-Instruct` | Base model to fine-tune |
+| `LFL_OLLAMA_BASE_TAG` | `qwen2.5:0.5b-instruct` | Same base in Ollama, used before you deploy |
+| `LFL_DEPLOY_NAME` | `nimbus-support` | Name of the fine-tune in Ollama |
+| `LFL_DATA_DIR` | `data` | Seed data folder |
+| `LFL_ARTIFACTS_DIR` | `artifacts` | Run output folder |
+
+**Quantization and training**
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LFL_FINETUNE_STRATEGY` | `qlora` | `qlora` or `lora` |
+| `LFL_QUANT_BITS` | `4` | `4` or `8` |
+| `LFL_QUANT_TYPE` | `nf4` | `nf4` or `fp4` |
+| `LFL_DOUBLE_QUANT` | `true` | Quantize the quantization constants too |
+| `LFL_COMPUTE_DTYPE` | `auto` | `auto` (bf16 on Ampere and newer, else fp16), `bfloat16`, `float16` |
+| `LFL_GRADIENT_CHECKPOINTING` | `true` | Trade compute for memory |
+| `LFL_LORA_R`, `LFL_LORA_ALPHA`, `LFL_LORA_DROPOUT` | `16`, `32`, `0.05` | Adapter rank, scale, dropout |
+| `LFL_LORA_TARGET_MODULES` | all 7 linear layers | Attention and MLP projections |
+| `LFL_LEARNING_RATE` | `0.0002` | |
+| `LFL_NUM_EPOCHS` | `1` | Passes over the training data |
+| `LFL_BATCH_SIZE` | `4` | Effective batch, split by the profile stage |
+| `LFL_MAX_SEQ_LEN` | `512` | Tokens per example |
+| `LFL_SEED` | `42` | Split and training seed |
+| `LFL_WARMUP_RATIO` | `0.03` | Warmup share of total steps |
+| `LFL_LR_SCHEDULER` | `cosine` | |
+| `LFL_OPTIMIZER` | `paged_adamw_8bit` | Becomes `adamw_torch` without bitsandbytes |
+| `LFL_VAL_SPLIT` | `0.1` | Share of rows held out for evaluation |
+| `LFL_MIN_ANSWER_CHARS` | `20` | Prepare drops shorter answers |
+
+**Export**
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `LFL_GGUF_CONVERT_SCRIPT` | empty (searched for) | Path to `convert_hf_to_gguf.py` |
+| `LFL_GGUF_OUTTYPE` | `q8_0` | GGUF quantization type |
+
 ---
 
 ## Stopping safely
 
-- Press **Ctrl + C** in each terminal (backend and console). Wait for the prompt to come back.
-- Stopping the backend in the middle of a run is safe. The status file is written atomically, and the next run starts cleanly. The interrupted run just stays unfinished on disk under `artifacts/`.
-- Nothing needs to be shut down in any particular order.
+- Press **Ctrl + C** in each terminal and wait for the prompt to come back.
+- Stopping the backend in the middle of a run is safe. The status file is written atomically, and the next run starts cleanly. The interrupted run stays on disk under `artifacts/`.
 
 ## Common mistakes
 
 | Mistake | What happens | Do this instead |
 |---|---|---|
-| Running `cp .env.example .env` when `.env` already exists | Your real keys are overwritten | Run it only the first time |
+| Running `cp .env.example .env` when `.env` exists | Your real keys are overwritten | Run it only the first time |
 | Starting both servers in one terminal | The first one blocks the second | One terminal each |
 | Opening http://localhost:8000 | You see the API docs, not the app | Open http://localhost:5173 |
 | Editing `.env` without restarting the backend | Nothing changes | Ctrl + C, then start uvicorn again |
-| Forgetting to activate the venv | `No module named uvicorn` | `.venv\Scripts\Activate.ps1` (Windows) or `source .venv/bin/activate` |
+| Forgetting to activate the venv | `No module named uvicorn` | Activate `.venv` first |
 | A different base model in `.env` than on Colab | The merge in the export stage fails | Use the same `LFL_BASE_MODEL_HF` in both places |
 | Pasting a key into an issue, chat or screenshot | The key is exposed | Revoke it at the provider immediately |
 
@@ -200,30 +297,17 @@ If a tool is missing, the stage fails with instructions and leaves `DEPLOY_PLAN.
 | Symptom | Fix |
 |---|---|
 | Console says "backend offline" | Start uvicorn on port 8000 |
-| `WinError 10013` or `address already in use` when starting uvicorn | Something else owns port 8000 (often a Docker container: check `docker ps`). Stop it, or start uvicorn with `--port 8001` and start the console with `LFL_API_PORT=8001` set (PowerShell: `$env:LFL_API_PORT="8001"`) |
+| `WinError 10013` or `address already in use` | Another program owns port 8000 (often a Docker container: check `docker ps`). Start uvicorn with `--port 8001` and the console with `LFL_API_PORT=8001` (PowerShell: `$env:LFL_API_PORT="8001"`) |
 | Profile says "downgraded from QLoRA" | Read the reason. Usually no CUDA torch, or `pip install bitsandbytes` |
-| `CUDA out of memory` | `LFL_BATCH_SIZE=1`, or `LFL_MAX_SEQ_LEN=256`. On LoRA, switching to QLoRA helps most |
-| Loss is `nan` on an older GPU | Should not happen with the kbit prep step; if it does, try `LFL_COMPUTE_DTYPE=float16` explicitly and report it |
+| `CUDA out of memory` | `LFL_BATCH_SIZE=1` or `LFL_MAX_SEQ_LEN=256`. On LoRA, switching to QLoRA helps most |
 | Pull stage 401 or 403 | Gated model. Accept the licence on the model page and set `HF_TOKEN` |
 | Chat says "no key" | Put the key in `.env` and restart the API |
-| Chat says "could not reach" a gateway | Check the base URL and whether you need a VPN or proxy for it |
+| Chat says HTTP 401 from an unexpected server | A shell variable overrides `.env`. See [providers.md](providers.md#checking-it-works) |
+| Chat says "could not reach" a gateway | Check the base URL, and whether you need a VPN or proxy |
 | Export cannot find the converter | Set `LFL_GGUF_CONVERT_SCRIPT` to the full file path |
-| Chat says Ollama "does not know the model", or your model vanished | Another Ollama is answering on port 11434, often one inside Docker. `docker ps` shows it. Stop that container, or run `ollama create` again while the right one is running. |
+| Chat says Ollama "does not know the model" | Another Ollama answers on port 11434, often one inside Docker. Stop it, or run `ollama create` again against the right one |
 
-`GET http://localhost:8000/api/health` runs every check at once. The **System** panel in the console shows the same thing.
-
----
-
-## Running the tests
-
-```bash
-pytest
-ruff check src tests
-ruff format --check src tests
-npm run build --prefix web
-```
-
-No GPU or torch needed. CI runs these same four checks.
+`GET http://localhost:8000/api/health` runs every check at once; the **System** panel in the console shows the same.
 
 ---
 

@@ -3,6 +3,9 @@
 ![PEFT](https://img.shields.io/badge/PEFT-LoRA%20adapters-FFD21E?logo=huggingface&logoColor=black)
 ![bitsandbytes](https://img.shields.io/badge/bitsandbytes-NF4%20%C2%B7%20paged%20AdamW-8A2BE2)
 ![PyTorch](https://img.shields.io/badge/PyTorch-bf16%20%2F%20fp16-EE4C2C?logo=pytorch&logoColor=white)
+![Transformers](https://img.shields.io/badge/Transformers-Trainer-FFD21E?logo=huggingface&logoColor=black)
+![CUDA](https://img.shields.io/badge/CUDA-required%20for%204--bit-76B900?logo=nvidia&logoColor=white)
+![Qwen](https://img.shields.io/badge/Qwen2.5-0.5B%20%C2%B7%201.5B-615CED?logo=qwen&logoColor=white)
 
 This page covers what the project did with LoRA before, whether QLoRA works here, what changed, and the traps worth knowing about.
 
@@ -31,20 +34,9 @@ Overall the v1 code was solid: lazy imports, honest dry-run labelling, good erro
 
 QLoRA is LoRA with the frozen base quantized to 4-bit NormalFloat (NF4). The adapters themselves still train in bf16 or fp16. It is not a newer replacement for LoRA so much as LoRA plus a memory trick.
 
-```mermaid
-flowchart LR
-    X[input] --> DQ[dequantize<br/>NF4 to bf16<br/>on the fly]
-    W[(frozen base<br/>4-bit NF4)] --> DQ
-    DQ --> MM[matmul]
-    X --> LA[LoRA A<br/>bf16] --> LB[LoRA B<br/>bf16] --> ADD
-    MM --> ADD((+)) --> Y[output]
+![One QLoRA layer: the frozen 4-bit base weight is dequantized on every pass and multiplied by x, while the trainable LoRA A and B path adds B·A·x](images/qlora-forward.svg)
 
-    style W fill:#8A2BE2,color:#fff
-    style LA fill:#FFD21E,color:#000
-    style LB fill:#FFD21E,color:#000
-```
-
-Gradients only flow through the yellow boxes. The purple box never changes, so squeezing it to 4-bit costs very little quality.
+Gradients only flow through the green LoRA path. The base weight never changes, so squeezing it to 4-bit costs very little quality.
 
 ### The trade you are making
 
@@ -68,29 +60,32 @@ The default base model is **0.5B parameters**. Its weights are about 1 GB in bf1
 | Qwen2.5-7B | 14.7 GB | 4.9 GB | 9.8 GB | Apache-2.0 |
 | Llama-3.1-8B | 16.6 GB | 5.4 GB | 11.2 GB | Llama 3.1 Community |
 
-These come from `finetune-lab plan` and are deliberately rough (weights plus adapters plus optimizer state plus a flat allowance for activations). To get the real benefit, set:
+These come from `finetune-lab plan` and are deliberately rough (weights plus adapters plus optimizer state plus a flat allowance for activations).
+
+Real runs here use **1.5B**: it fits a free Colab T4 with room to spare, and merging it later needs only about 3 GB of RAM. 7B is where QLoRA pays off most, but merging it needs about 15 GB of RAM on the machine that exports. Avoid 3B because of its licence. For a real run, set:
 
 ```env
-LFL_BASE_MODEL_HF=Qwen/Qwen2.5-7B-Instruct
-LFL_OLLAMA_BASE_TAG=qwen2.5:7b-instruct
+LFL_BASE_MODEL_HF=Qwen/Qwen2.5-1.5B-Instruct
+LFL_OLLAMA_BASE_TAG=qwen2.5:1.5b-instruct
 ```
 
 The 0.5B default stays so the full pipeline still runs on a laptop and in CI.
 
 ---
 
-## 3. What changed
+## 3. How the plan is chosen
 
-```mermaid
-flowchart TB
-    P[Stage 4: profile] --> PB[probe_backends<br/>torch? CUDA? bitsandbytes? bf16?]
-    PB --> RP{resolve_plan}
-    RP -- all present --> Q[QLoRA plan<br/>4-bit NF4, double quant,<br/>paged_adamw_8bit, checkpointing]
-    RP -- anything missing --> L[LoRA plan<br/>downgraded = true<br/>reason = what is missing]
-    Q --> J[(profile.json)]
-    L --> J
-    J --> F[Stage 5: fine-tune<br/>reads the plan, never re-decides]
-```
+![QLoRA or LoRA: stage 4 checks the requested strategy, then whether torch, CUDA and bitsandbytes are present; it writes a QLoRA plan or a LoRA plan with a reason to profile.json, which stage 5 reads](images/qlora-decision.svg)
+
+Stage 4 calls `probe_backends()`, which looks at the machine and never raises, then `resolve_plan()` in `pipeline/quantization.py`:
+
+1. `LFL_FINETUNE_STRATEGY=lora` gives a LoRA plan with `downgraded: false`.
+2. Otherwise, if torch, a CUDA device or bitsandbytes is missing, it gives a LoRA plan with `downgraded: true` and a `reason` naming what is missing.
+3. Otherwise it gives the QLoRA plan: 4-bit NF4, double quantization, a paged 8-bit optimizer and gradient checkpointing.
+
+The plan goes into `profile.json`, and stage 5 reads it without deciding again. Without bitsandbytes, the optimizer becomes `adamw_torch`.
+
+### What changed from v1
 
 | Area | Change |
 |---|---|

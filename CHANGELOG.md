@@ -1,5 +1,8 @@
 # Changelog
 
+[![SemVer](https://img.shields.io/badge/versioning-SemVer-3F4551)](https://semver.org/)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
+
 This project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
@@ -10,6 +13,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Documentation rewritten around new diagrams: system overview, package layers, request flows, run and stage lifecycles, the run directory, configuration and secrets, deployment and CI. The Hugging Face token guide moved into getting started, the release checklist into contributing, and every setting is now explained in one table.
 - React 19 (via Dependabot), and GitHub Actions checkout, setup-python and setup-node v7. Checked in a browser: dry run, compare chat, no console errors.
 - Replies faster than a second show their time in milliseconds.
 
